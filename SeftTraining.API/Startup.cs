@@ -12,7 +12,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using SeftTraining.Business.IServices;
+using SeftTraining.Business.Services;
+using SeftTraining.Data.IRepositories;
 using SeftTraining.Data.Models;
+using SeftTraining.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +49,7 @@ namespace SeftTraining.API
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
             {
-                option.Authority = Configuration["Jwt:Authority"];
+                //option.Authority = Configuration["Jwt:Authority"];
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -62,6 +66,12 @@ namespace SeftTraining.API
             services.AddDbContext<SeftTrainingContext>(options => options.UseSqlServer(connectionString));
 
             services.AddScoped<SeftTrainingContext>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<IAuthenticateService, AuthenticateService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IProductService, ProductService>();
 
             //services.AddControllers();
             services.AddControllersWithViews()
@@ -84,6 +94,8 @@ namespace SeftTraining.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SeftTraining.API", Version = "v1" });
 
+                //c.IncludeXmlComments(string.Format(@"{0}/bin/SeftTraining.API.xml", AppDomain.CurrentDomain.BaseDirectory));
+                c.IncludeXmlComments(string.Format(@"bin/SeftTraining.API.xml"));
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
