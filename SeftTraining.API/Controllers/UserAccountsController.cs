@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SeftTraining.Business.IServices;
 using SeftTraining.Business.RequestObjects.UserAccountRequests;
+using SeftTraining.Business.ResponseObjects.Commons;
+using SeftTraining.Business.ResponseObjects.UserAccountResponses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,12 +46,12 @@ namespace SeftTraining.API.Controllers
             try
             {
                 var user = await _service.Login(request);
-                if (user != null) return Ok(user);
-                return BadRequest();
+                if (user != null) return Ok(new Response<LoginResponse>(user));
+                return BadRequest(new Response<LoginResponse> { Message = "Invalid username or password"});
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new Response<LoginResponse> { Message = ex.Message});
             }
         }
     }
